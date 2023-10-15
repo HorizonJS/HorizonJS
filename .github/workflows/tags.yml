@@ -14,4 +14,12 @@ jobs:
       
       - name: Building
         run: ./build.sh "$GITHUB_REF_NAME"
-        
+      - name: Show Contents
+        run: ls ./build
+
+      - name: Release
+        uses: fnkr/github-action-ghr@v1
+        env:
+          GHR_PATH: ./build/horizonjs-$GITHUB_REF_NAME.zip
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHR_REPLACE: true
