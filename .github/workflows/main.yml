@@ -14,7 +14,7 @@ jobs:
       - name: Run a one-line script
         run: ./build.sh "latest"
 
-      - uses: Shopify/upload-to-release@v1
+      - uses: Shopify/upload-to-release@v1.0.1
         with:
           name: horizonjs-latest
           path: ./build/horizonjs-latest.zip
