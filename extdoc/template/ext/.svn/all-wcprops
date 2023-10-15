@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/192/branches/1.0/template/ext
+END
+welcome.html
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/191/branches/1.0/template/ext/welcome.html
+END
+license.txt
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/106/branches/1.0/template/ext/license.txt
+END
+source-wrap.html
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/141/branches/1.0/template/ext/source-wrap.html
+END
+template.xml
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/106/branches/1.0/template/ext/template.xml
+END
+index.html
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/191/branches/1.0/template/ext/index.html
+END

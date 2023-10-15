@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/!svn/ver/171/branches/1.0/sample
+END
+ext-doc.bat
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/112/branches/1.0/sample/ext-doc.bat
+END
+README.txt
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/106/branches/1.0/sample/README.txt
+END
+ext-doc.sh
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/171/branches/1.0/sample/ext-doc.sh
+END
+sample.js
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/160/branches/1.0/sample/sample.js
+END
+ext.xml
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/170/branches/1.0/sample/ext.xml
+END

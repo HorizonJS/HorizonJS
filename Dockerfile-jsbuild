@@ -1,0 +1,14 @@
+# syntax=docker/dockerfile:1
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0
+
+WORKDIR /src
+
+COPY ./jsbuild/*.csproj .
+RUN dotnet restore
+
+COPY ./jsbuild/* ./
+COPY ./extjs-2.0.2/source /extjs-2.0.2
+COPY ./extjs-2.0.2/resources /extjs-2.0.2/resources
+RUN dotnet run --project /src/JSBuildConsole.csproj --jsb "/extjs-2.0.2/ext.jsb" --out "/build"
+RUN dotnet run --project /src/JSBuildConsole.csproj --jsb "/extjs-2.0.2/resources/resources.jsb" --out "/build/resources"

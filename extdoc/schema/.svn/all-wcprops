@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/!svn/ver/111/branches/1.0/schema
+END
+template.xsd
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/106/branches/1.0/schema/template.xsd
+END
+ext-doc.xsd
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/111/branches/1.0/schema/ext-doc.xsd
+END

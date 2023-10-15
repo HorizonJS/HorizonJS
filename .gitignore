@@ -1,0 +1,4 @@
+.DS_Store
+jsbuild/obj
+jsbuild/bin
+build

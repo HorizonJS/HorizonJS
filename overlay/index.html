@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ExtJS 2.0.2</title>
+    <link rel="stylesheet" href="resources/css/ext-all.css">
+  </head>
+  <body>
+	<script src="adapter/ext/ext-base.js"></script>
+    <script src="ext-all.js"></script>
+    <script>
+        Ext.onReady(function(){
+            (new Ext.Window({
+                title: 'ExtJS 2.0.2 Build',
+                closable: false,
+                width: 400,
+                height: 200,
+                html: `
+                    <b>ExtJS 2.0.2 Build</b><br />
+                    <a href="/docs">Documentation</a><br />
+                    <a href="/examples">Examples</a>
+                `
+            })).show();
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/!svn/ver/110/branches/1.0/lib
+END
+jaxb-impl.jar
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/106/branches/1.0/lib/jaxb-impl.jar
+END
+jaxb-xjc.jar
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/106/branches/1.0/lib/jaxb-xjc.jar
+END
+commons-cli-1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/110/branches/1.0/lib/commons-cli-1.1.jar
+END
+junit-4.5.jar
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/106/branches/1.0/lib/junit-4.5.jar
+END
