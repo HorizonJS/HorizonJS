@@ -14,9 +14,8 @@ jobs:
       - name: Run a one-line script
         run: ./build.sh "latest"
 
-      - uses: Shopify/upload-to-release@v1.0.1
-        with:
-          name: horizonjs-latest
-          path: ./build/horizonjs-latest.zip
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          content-type: application/zip
+      - name: Release
+        uses: fnkr/github-action-ghr@v1
+        env:
+          GHR_PATH: ./build/horizonjs-latest.zip
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
