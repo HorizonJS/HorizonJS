@@ -2,6 +2,8 @@
 
 # docker system prune -f
 
+tag="$1"
+
 echo "Deleting old build..."
 rm -Rf ./build
 
@@ -11,14 +13,14 @@ rm -Rf ./jsbuild/bin
 docker rm horizonjs-jsbuild
 docker build -t horizonjs/jsbuild:latest -f ./Dockerfile-jsbuild .
 docker create --name=horizonjs-jsbuild horizonjs/jsbuild:latest
-mkdir -p /build
+mkdir -p ./build
 docker cp horizonjs-jsbuild:/build ./build
 
 echo "Building Extdoc and running on source..."
 rm -Rf ./build/docs
 docker rm horizonjs-extdoc
 docker build -t horizonjs/extdoc:latest -f ./Dockerfile-extdoc .
-docker create --name=flexjs-extdoc horizonjs/extdoc:latest
+docker create --name=horizonjs-extdoc horizonjs/extdoc:latest
 mkdir -p ./build/docs
 docker cp horizonjs-extdoc:/docs/ ./build
 
@@ -36,5 +38,10 @@ rm -Rf ./build/resources/resources.jsb
 
 echo "Copying overlay..."
 cp -Rf ./overlay/* ./build/
+
+echo "Compressing..."
+pushd ./build
+zip -r "../build/horizonjs-$tag.zip" .
+popd
 
 echo "Done!"
