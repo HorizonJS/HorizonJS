@@ -12,3 +12,4 @@ COPY ./extjs-2.0.2/source /extjs-2.0.2
 COPY ./extjs-2.0.2/resources /extjs-2.0.2/resources
 RUN dotnet run --project /src/JSBuildConsole.csproj --jsb "/extjs-2.0.2/ext.jsb" --out "/build"
 RUN dotnet run --project /src/JSBuildConsole.csproj --jsb "/extjs-2.0.2/resources/resources.jsb" --out "/build/resources"
+RUN ls -la /build
