@@ -19,7 +19,8 @@ jobs:
 
       - name: Release
         uses: fnkr/github-action-ghr@v1
+        if: startsWith(github.ref, 'refs/tags/')
         env:
-          GHR_PATH: ./build/horizonjs-$GITHUB_REF_NAME.zip
+          GHR_PATH: ./build/horizonjs-${{github.ref_name}}.zip
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GHR_REPLACE: true
