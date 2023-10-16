@@ -13,8 +13,7 @@ rm -Rf ./jsbuild/bin
 docker rm horizonjs-jsbuild
 docker build -t horizonjs/jsbuild:latest -f ./Dockerfile-jsbuild .
 docker create --name=horizonjs-jsbuild horizonjs/jsbuild:latest
-mkdir -p ./build
-docker cp horizonjs-jsbuild:/build ./build
+docker cp horizonjs-jsbuild:/build ./
 echo '!!!!!!!'
 ls -la ./build
 echo '!!!!!!!'
@@ -24,7 +23,6 @@ rm -Rf ./build/docs
 docker rm horizonjs-extdoc
 docker build -t horizonjs/extdoc:latest -f ./Dockerfile-extdoc .
 docker create --name=horizonjs-extdoc horizonjs/extdoc:latest
-mkdir -p ./build/docs
 docker cp horizonjs-extdoc:/docs/ ./build
 
 echo "Copying examples..."
@@ -44,7 +42,7 @@ cp -Rf ./overlay/* ./build/
 
 echo "Compressing..."
 pushd ./build
-zip -r "../build/horizonjs-$tag.zip" .
+zip -q -r "../build/horizonjs-$tag.zip" .
 popd
 
 echo "Done!"
