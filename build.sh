@@ -15,6 +15,9 @@ docker build -t horizonjs/jsbuild:latest -f ./Dockerfile-jsbuild .
 docker create --name=horizonjs-jsbuild horizonjs/jsbuild:latest
 mkdir -p ./build
 docker cp horizonjs-jsbuild:/build ./build
+echo '!!!!!!!'
+ls -la ./build
+echo '!!!!!!!'
 
 echo "Building Extdoc and running on source..."
 rm -Rf ./build/docs
