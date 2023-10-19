@@ -10,7 +10,7 @@ RUN ant clean compile jar dist
 
 # build extjs 2.0.2 documentation
 # they say "source" in the README, but it's actually pointing to "src"
-COPY ./build/source /extdoc/build/dist/ext-doc-snapshot/sample/ext/src
+COPY ./build/build/source /extdoc/build/dist/ext-doc-snapshot/sample/ext/src
 WORKDIR /extdoc/build/dist/ext-doc-snapshot
 # remove the sample.js file there to get rid of the sample classes they included
 RUN rm ./sample/sample.js && java -jar ./ext-doc.jar -p ./sample/ext.xml -o /docs -t ./template/ext/template.xml -verbose
