@@ -46,14 +46,15 @@ cp -Rf ./overlay/docs/. ./build/docs/
 cp -Rf ./overlay/examples/. ./build/examples/
 
 echo "Compressing..."
+mkdir -p ./build/zips
 pushd ./build/build/
-zip -q -r "../horizonjs-$tag.zip" *
+zip -q -r "../zips/horizonjs-$tag.zip" *
 popd
 pushd ./build/docs/
-zip -q -r "../horizonjs-docs-$tag.zip" *
+zip -q -r "../zips/horizonjs-docs-$tag.zip" *
 popd
 pushd ./build/examples/
-zip -q -r "../horizonjs-examples-$tag.zip" *
+zip -q -r "../zips/horizonjs-examples-$tag.zip" *
 popd
 
 echo "Done!"
