@@ -2,3 +2,4 @@
 jsbuild/obj
 jsbuild/bin
 build
+!overlay/build
