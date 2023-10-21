@@ -70,7 +70,6 @@ if [ "$tag" == "main" ]; then
     # cp -Rf ./overlay/docs/. ./build/website/docs
     cp -Rf ./overlay/website/. ./build/website/
     # cleanup unwanted from source files
-    rm -f ./build/website/docs/welcome.html
     rm -f ./build/website/docs/README.md
     rm -f ./build/website/examples/README.md
     rm -f ./build/website/README.md
