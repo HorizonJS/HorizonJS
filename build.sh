@@ -57,4 +57,23 @@ pushd ./build/examples/
 zip -q -r "../zips/horizonjs-examples-$tag.zip" *
 popd
 
+if [ "$tag" == "main" ]; then
+    echo "Building website..."
+    mkdir -p ./build/website
+    mkdir -p ./build/website/docs
+    mkdir -p ./build/website/examples
+    cp -Rf ./build/build/. ./build/website
+    cp -Rf ./build/docs/. ./build/website/docs
+    cp -Rf ./build/examples/. ./build/website/examples
+    cp -Rf ./build/zips/. ./build/website/release
+    # this should already be done since copying from the build docs
+    # cp -Rf ./overlay/docs/. ./build/website/docs
+    cp -Rf ./overlay/website/. ./build/website/
+    # cleanup unwanted from source files
+    rm -f ./build/website/docs/welcome.html
+    rm -f ./build/website/docs/README.md
+    rm -f ./build/website/examples/README.md
+    rm -f ./build/website/README.md
+fi
+
 echo "Done!"
