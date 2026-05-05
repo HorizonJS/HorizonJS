@@ -6,29 +6,190 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>ExtJS 2.0.2</title>
     <link rel="stylesheet" href="resources/css/ext-all.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .horizon-home {
+            font: normal 13px Arial, Helvetica, sans-serif;
+            line-height: 1.45;
+        }
+
+        .horizon-home h1,
+        .horizon-home h2,
+        .horizon-home h3,
+        .markdown-body h1,
+        .markdown-body h2,
+        .markdown-body h3 {
+            margin: 0 0 10px;
+        }
+
+        .horizon-home h3 {
+            margin-top: 18px;
+        }
+
+        .markdown-body {
+            color: #222;
+            font: normal 13px Arial, Helvetica, sans-serif;
+            line-height: 1.5;
+            max-width: 980px;
+        }
+
+        .markdown-body h1 {
+            font-size: 24px;
+        }
+
+        .markdown-body h2 {
+            border-bottom: 1px solid #ddd;
+            font-size: 19px;
+            margin-top: 24px;
+            padding-bottom: 4px;
+        }
+
+        .markdown-body h3 {
+            font-size: 16px;
+            margin-top: 18px;
+        }
+
+        .markdown-body p,
+        .markdown-body ul,
+        .markdown-body ol,
+        .markdown-body pre {
+            margin: 0 0 12px;
+        }
+
+        .markdown-body code {
+            background: #f3f3f3;
+            border: 1px solid #ddd;
+            font-family: Consolas, "Courier New", monospace;
+            padding: 1px 3px;
+        }
+
+        .markdown-body pre {
+            background: #f7f7f7;
+            border: 1px solid #ddd;
+            overflow: auto;
+            padding: 10px;
+        }
+
+        .markdown-body pre code {
+            background: transparent;
+            border: 0;
+            padding: 0;
+        }
+
+        .doc-loading,
+        .doc-error {
+            font: normal 13px Arial, Helvetica, sans-serif;
+            padding: 10px;
+        }
+
+        .doc-error {
+            color: #8a1f11;
+        }
+    </style>
   </head>
   <body>
 	<script src="adapter/ext/ext-base.js"></script>
     <script src="ext-all.js"></script>
-    <script>
+    <script type="module">
+        import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+
         Ext.onReady(function(){
-            (new Ext.Window({
+            var buildDateIso = '__HORIZONJS_BUILD_DATE__';
+            var buildDateText = buildDateIso;
+            var zeroWidthStart = /^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/;
+
+            if (buildDateIso.indexOf('__') === 0) {
+                buildDateText = 'not stamped';
+            } else {
+                buildDateText = new Date(buildDateIso).toUTCString();
+            }
+
+            function renderMarkdown(panel, url) {
+                panel.body.update('<div class="doc-loading">Loading ' + url + '...</div>');
+
+                fetch(url, {cache: 'no-cache'})
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error(response.status + ' ' + response.statusText);
+                        }
+                        return response.text();
+                    })
+                    .then(function(markdown) {
+                        panel.body.update(
+                            '<div class="markdown-body">' +
+                            marked.parse(markdown.replace(zeroWidthStart, '')) +
+                            '</div>'
+                        );
+                    })
+                    .catch(function(error) {
+                        panel.body.update(
+                            '<div class="doc-error">Could not load ' +
+                            url +
+                            ': ' +
+                            error.message +
+                            '</div>'
+                        );
+                    });
+            }
+
+            function markdownPanel(title, url) {
+                return {
+                    title: title,
+                    autoScroll: true,
+                    bodyStyle: 'padding:16px;',
+                    markdownUrl: url,
+                    listeners: {
+                        activate: function(panel) {
+                            if (!panel.markdownLoaded) {
+                                panel.markdownLoaded = true;
+                                renderMarkdown(panel, panel.markdownUrl);
+                            }
+                        }
+                    }
+                };
+            }
+
+            var tabs = new Ext.TabPanel({
+                activeTab: 0,
+                border: false,
+                items: [{
+                    title: 'Home',
+                    autoScroll: true,
+                    bodyStyle: 'padding:16px;',
+                    html: `
+                        <div class="horizon-home">
+                            <h1>HorizonJS</h1>
+                            <h2>ExtJS 2.0.2 Based Rebuild</h2>
+                            <h3>Build</h3>
+                            Build date: ${buildDateText}<br />
+                            <h3>Links</h3>
+                            <a href="docs/">Documentation</a><br />
+                            <a href="examples/">Examples</a><br />
+                            <h3>Latest Main(Master) Build</h3>
+                            <a href="release/horizonjs-main.zip">HorizonJS Package</a><br />
+                            <a href="release/horizonjs-docs-main.zip">Documentation App</a><br />
+                            <a href="release/horizonjs-examples-main.zip">Examples</a><br />
+                        </div>
+                    `
+                },
+                markdownPanel('README', 'README.md'),
+                markdownPanel('Ext 2 Usage', 'EXTJS_2_0_2_USAGE.md')]
+            });
+
+            new Ext.Window({
                 title: 'HorizonJS - ExtJS 2.0.2 Rebuild',
                 closable: false,
-                width: 400,
-                height: 200,
-                html: `
-                    <h1>HorizonJS</h1>
-                    <h2>ExtJS 2.0.2 Based Rebuild</h2>
-                    <h3>Links</h3>
-                    <a href="https://horizonjs.github.io/HorizonJS/docs">Documentation</a><br />
-                    <a href="https://horizonjs.github.io/HorizonJS/examples">Examples</a><br />
-                    <h3>Latest Main(Master) Build</h3>
-                    <a href="https://horizonjs.github.io/HorizonJS/release/horizon-main.zip">HorizonJS Package</a><br />
-                    <a href="https://horizonjs.github.io/HorizonJS/release/horizon-docs-main.zip">Documentation App</a><br />
-                    <a href="https://horizonjs.github.io/HorizonJS/release/horizon-examples-main.zip">Examples</a><br />
-                `
-            })).show();
+                resizable: true,
+                maximizable: true,
+                width: 900,
+                height: 650,
+                layout: 'fit',
+                items: tabs
+            }).show();
         });
     </script>
   </body>
