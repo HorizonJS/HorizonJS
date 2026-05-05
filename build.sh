@@ -72,11 +72,23 @@ if [ "$tag" == "main" ]; then
     # this should already be done since copying from the build docs
     # cp -Rf ./overlay/docs/. ./build/website/docs
     cp -Rf ./overlay/website/. ./build/website/
+
+    build_date="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+    if [ -f ./build/website/index.html ]; then
+        sed -i.bak "s/__HORIZONJS_BUILD_DATE__/$build_date/g" ./build/website/index.html
+        rm -f ./build/website/index.html.bak
+    fi
     
     # cleanup unwanted from source files
     rm -f ./build/website/docs/README.md
     rm -f ./build/website/examples/README.md
     rm -f ./build/website/README.md
+
+    for markdown_file in README.md EXTJS_2_0_2_USAGE.md; do
+        if [ -f "./$markdown_file" ]; then
+            cp -f "./$markdown_file" "./build/website/$markdown_file"
+        fi
+    done
 fi
 
 echo "Done!"

@@ -104,11 +104,24 @@ if ($Tag -eq "main") {
     # this should already be done since copying from the build docs
     # Copy-Item -Recurse -Force ./overlay/docs/* ./build/website/docs/
     Copy-Item -Recurse -Force ./overlay/website/* ./build/website/
+
+    $BuildDate = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+    $WebsiteIndex = "./build/website/index.html"
+    if (Test-Path $WebsiteIndex) {
+        (Get-Content -Raw $WebsiteIndex).Replace("__HORIZONJS_BUILD_DATE__", $BuildDate) |
+            Set-Content -NoNewline $WebsiteIndex
+    }
     
     # cleanup unwanted from source files
     Remove-Item -Force ./build/website/docs/README.md -ErrorAction SilentlyContinue
     Remove-Item -Force ./build/website/examples/README.md -ErrorAction SilentlyContinue
     Remove-Item -Force ./build/website/README.md -ErrorAction SilentlyContinue
+
+    foreach ($MarkdownFile in @("README.md", "EXTJS_2_0_2_USAGE.md")) {
+        if (Test-Path "./$MarkdownFile") {
+            Copy-Item -Force "./$MarkdownFile" "./build/website/$MarkdownFile"
+        }
+    }
 }
 
 Write-Host "Done!"
