@@ -1,0 +1,20 @@
+{
+  "name": "@horizonjs/core",
+  "version": "0.1.0-dev.0",
+  "description": "Ext JS 2.0.2 rebuilt for modern browsers, with a browser ES module entry point",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "repository": { "type": "git", "url": "git+https://github.com/HorizonJS/HorizonJS.git" },
+  "homepage": "https://github.com/HorizonJS/HorizonJS#readme",
+  "module": "./index.mjs",
+  "exports": {
+    ".": "./index.mjs",
+    "./styles.css": "./resources/css/ext-all.css",
+    "./themes/gray.css": "./resources/css/xtheme-gray.css",
+    "./resources/*": "./resources/*",
+    "./legacy/*": "./*",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": true,
+  "files": ["index.mjs", "ext-*.js", "adapter", "resources", "README.md", "LICENSE.txt"],
+  "publishConfig": { "access": "public" }
+}

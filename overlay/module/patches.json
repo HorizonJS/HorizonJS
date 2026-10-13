@@ -1,0 +1,80 @@
+[
+  {
+    "File": "core/Ext.js",
+    "Before": "Ext = {version: '2.0.1'};",
+    "After": "Ext = window.Ext = {version: '2.0.2'};",
+    "Count": 1
+  },
+  {
+    "File": "core/Ext.js",
+    "Before": "window[\"undefined\"] = window[\"undefined\"];",
+    "After": "// window.undefined is read-only in modern browsers.",
+    "Count": 1
+  },
+  {
+    "File": "core/Ext.js",
+    "Before": "eval('if (typeof ' + rt + ' == \"undefined\"){' + rt + ' = {};} o = ' + rt + ';');",
+    "After": "o = window[rt] = window[rt] || {};",
+    "Count": 1
+  },
+  {
+    "File": "core/DomQuery.js",
+    "Before": "eval(\"var batch = 30803;\");",
+    "After": "var batch = 30803;",
+    "Count": 1
+  },
+  {
+    "File": "core/DomQuery.js",
+    "Before": "eval(fn.join(\"\"));\n            return f;",
+    "After": "return eval(\"(function(){\" + fn.join(\"\") + \"; return f;})()\");",
+    "Count": 1
+  },
+  {
+    "File": "core/Fx.js",
+    "Before": "el.queueFx(o, function(){",
+    "After": "el.queueFx(o, function runEffect(){",
+    "Count": 11
+  },
+  {
+    "File": "core/Fx.js",
+    "Before": "arguments.callee.anim",
+    "After": "runEffect.anim",
+    "Count": 8
+  },
+  {
+    "File": "adapter/ext-base.js",
+    "Before": "                if (!ev) {\n                    var c = this.getEvent.caller;\n                    while (c) {\n                        ev = c.arguments[0];\n                        if (ev && Event == ev.constructor) {\n                            break;\n                        }\n                        c = c.caller;\n                    }\n                }\n",
+    "After": "                // Native listeners pass the event explicitly; strict functions\n                // cannot inspect their caller or its arguments.\n",
+    "Count": 1
+  },
+  {
+    "File": "core/EventManager.js",
+    "Before": "        if(Ext.isGecko || Ext.isOpera) {\n            document.addEventListener(\"DOMContentLoaded\", fireDocReady, false);\n        }else if(Ext.isIE){\n            document.write(\"<s\"+'cript id=\"ie-deferred-loader\" defer=\"defer\" src=\"/'+'/:\"></s'+\"cript>\");\n            var defer = document.getElementById(\"ie-deferred-loader\");\n            defer.onreadystatechange = function(){\n                if(this.readyState == \"complete\"){\n                    fireDocReady();\n                }\n            };\n        }else if(Ext.isSafari){\n            docReadyProcId = setInterval(function(){\n                var rs = document.readyState;\n                if(rs == \"complete\") {\n                    fireDocReady();\n                 }\n            }, 10);\n        }\n",
+    "After": "        if(document.readyState !== \"loading\") {\n            setTimeout(fireDocReady, 0);\n        } else {\n            document.addEventListener(\"DOMContentLoaded\", fireDocReady, false);\n        }\n",
+    "Count": 1
+  },
+  {
+    "File": "util/Observable.js",
+    "Before": "o[a[i]] = true;",
+    "After": "this.events[a[i]] = true;",
+    "Count": 1
+  },
+  {
+    "File": "widgets/DatePicker.js",
+    "Before": "intDay = i - startingPos + 1;",
+    "After": "var intDay = i - startingPos + 1;",
+    "Count": 1
+  },
+  {
+    "File": "dd/DDCore.js",
+    "Before": "for (j in this.ids[i]) {",
+    "After": "for (var j in this.ids[i]) {",
+    "Count": 1
+  },
+  {
+    "File": "widgets/grid/ColumnSplitDD.js",
+    "Before": "ev = Ext.EventObject.setEvent(e);",
+    "After": "var ev = Ext.EventObject.setEvent(e);",
+    "Count": 1
+  }
+]

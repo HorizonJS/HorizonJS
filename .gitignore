@@ -1,5 +1,8 @@
 .DS_Store
-jsbuild/obj
-jsbuild/bin
 build
 !overlay/build
+/.horizon-stage-*/
+/.horizon-backup-*/
+/horizon
+/horizon.exe
+/node_modules/

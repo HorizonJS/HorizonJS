@@ -1,0 +1,28 @@
+name: Build tool checks
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+          cache: false
+      - name: Test native build and docs tools
+        run: go test ./...
+      - name: Vet Go code
+        run: go vet ./...
+      - name: Build distribution with native tools
+        run: go run ./cmd/horizon build --tag main --docs go

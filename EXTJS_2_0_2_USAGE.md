@@ -14,8 +14,9 @@ JS 2.0.2, not modern Sencha Ext JS.
 - Write classic constructor/config JavaScript: `new Ext.Panel({...})`,
   `new Ext.data.Store({...})`, `Ext.extend(...)`, `Ext.reg(...)`, `var`, and
   function expressions.
-- Load scripts with plain script tags in dependency order. Ext 2 has no module
-  loader or bundler contract.
+- Classic distributions load with plain script tags in dependency order.
+  The generated `build/npm` package also provides a browser ES module that
+  initializes the standalone adapter and library and exports `Ext`.
 - Keep `extjs-2.0.2/` pristine when changing HorizonJS itself. Library patches
   should normally be placed under `overlay/` so the build process overlays them.
 - Remember that Ajax and Store loads are asynchronous. Put follow-up work in
@@ -40,6 +41,18 @@ such as panels, grids, forms, trees, windows, layouts, and toolbars require
 `ext-all.js`.
 
 ## Include Order
+
+For bundled browser applications using the package:
+
+```js
+import Ext from '@horizonjs/core';
+import '@horizonjs/core/styles.css';
+```
+
+The module sets `Ext.BLANK_IMAGE_URL` to its packaged asset and exposes the same
+object as `window.Ext`. Use one distribution per page. For native browser
+modules, import the package's served `index.mjs` URL and use a stylesheet link.
+See [the package guide](overlay/npm/README.md) for details.
 
 Recommended standalone order:
 
