@@ -10,15 +10,10 @@ import (
 	"strings"
 )
 
-type browserPatch struct {
-	File, Before, After string
-	Count               int
-}
-
 var regexpVersion = regexp.MustCompile(`^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$`)
 
-// Generate a separate strict-mode distribution. The legacy bundles retain
-// their original bytes; all module changes are reviewed in overlay/module.
+// Generate a strict-mode distribution from already-hardened staged source,
+// then apply the module-specific changes reviewed in overlay/module.
 func generateBrowserModule(root, library, dest string) error {
 	data, err := os.ReadFile(filepath.Join(root, "extjs-2.0.2", "source", "ext.jsb"))
 	if err != nil {
@@ -28,13 +23,9 @@ func generateBrowserModule(root, library, dest string) error {
 	if err := xml.Unmarshal(data, &manifest); err != nil {
 		return err
 	}
-	data, err = os.ReadFile(filepath.Join(root, "overlay", "module", "patches.json"))
+	patches, err := loadSourcePatches(filepath.Join(root, "overlay", "module", "patches.json"))
 	if err != nil {
 		return err
-	}
-	var patches []browserPatch
-	if err := json.Unmarshal(data, &patches); err != nil {
-		return fmt.Errorf("module patches: %w", err)
 	}
 	missing, err := legacyMissing()
 	if err != nil {
@@ -74,15 +65,9 @@ func generateBrowserModule(root, library, dest string) error {
 					return err
 				}
 				text := strings.ReplaceAll(string(source), "\r\n", "\n")
-				for index, patch := range patches {
-					if patch.File != name {
-						continue
-					}
-					if patch.Before == "" || patch.Count < 1 || strings.Count(text, patch.Before) != patch.Count {
-						return fmt.Errorf("module patch for %s: expected %d occurrences of %q", name, patch.Count, patch.Before)
-					}
-					text = strings.ReplaceAll(text, patch.Before, patch.After)
-					applied[index] = true
+				text, err = applySourcePatches(text, name, patches, applied)
+				if err != nil {
+					return err
 				}
 				module.WriteString("\n// " + name + "\n")
 				module.WriteString(text)
@@ -93,10 +78,8 @@ func generateBrowserModule(root, library, dest string) error {
 			return fmt.Errorf("module build: missing target %s", suffix)
 		}
 	}
-	for index, patch := range patches {
-		if !applied[index] {
-			return fmt.Errorf("module patch for %s was not applied to any included source", patch.File)
-		}
+	if err := checkAppliedPatches(patches, applied); err != nil {
+		return err
 	}
 	footer, err := os.ReadFile(filepath.Join(root, "overlay", "module", "footer.js"))
 	if err != nil {

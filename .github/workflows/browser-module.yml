@@ -23,7 +23,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium firefox
-      - name: Build with native tools and test Chromium
+      - name: Build and test Chromium compatibility and security
         run: npm run test:browser
-      - name: Test Firefox against the same build
+      - name: Test Firefox compatibility and security against the same build
         run: node scripts/test-browser.mjs --firefox

@@ -4,7 +4,7 @@ A rebuild of Ext JS 2.0.2 — the last open-source release — updated to build 
 
 ## What This Is
 
-Ext JS 2.0.2 (2008) was the final version released under the LGPL 3.0 license before the project went commercial. HorizonJS preserves that release in a form that actually builds and runs today. The original source, API documentation, and examples are all included — no features have been removed or altered beyond fixes needed for contemporary browser compatibility.
+Ext JS 2.0.2 (2008) was the final version released under the LGPL 3.0 license before the project went commercial. HorizonJS preserves that release in a form that builds and runs today. The original source, API documentation, and examples are included, with deliberate fixes for contemporary browsers and unsafe runtime input handling.
 
 ## Quick Start
 
@@ -60,10 +60,19 @@ See [the package guide](overlay/npm/README.md) for native imports, themes, legac
 files, and browser-only usage. The package name is provisional; publishing is
 not configured by this change.
 
-The browser module applies reviewed patches in `overlay/module/patches.json`
-without modifying `extjs-2.0.2/` or the classic bundle bytes. A patch that no
-longer matches fails the staged build. Semantic-version tags such as `v1.0.0`
+Shared patches in `overlay/source/patches.json` harden classic and module builds
+before minification. Module-specific patches in `overlay/module/patches.json`
+then handle strict-mode compatibility. The archived `extjs-2.0.2/` files remain
+unchanged, and a patch that no longer matches fails the staged build.
+See [runtime input rules](RUNTIME_SECURITY.md) for strict JSON, property mappings,
+provider registration, selectors, and trusted templates. Semantic-version tags such as `v1.0.0`
 set the package version; other builds use `0.1.0-dev.0`.
+
+For ordinary data display, use `new Ext.SafeTemplate('<p>{person.name}</p>')`.
+It binds text without executing expressions or interpreting inserted data as
+markup. Legacy Template/XTemplate remain available for trusted definitions.
+See [the HTML/prototype audit](HTML_PROTOTYPE_AUDIT.md) for remaining widget
+rendering and object-copying findings.
 
 To run the package checks (Node 22.12+ and Go required):
 
@@ -156,7 +165,10 @@ HorizonJS is a faithful rebuild of Ext JS 2.0.2. The only differences from the o
 - Minor patches for modern browser compatibility (CSS, DOM API changes)
 - `Ext` namespace and branding updated throughout
 
-No APIs have been removed or changed. Code that ran against Ext JS 2.0.2 should run against HorizonJS with no modifications.
+The Ext 2 constructor API remains available. Security fixes deliberately require
+strict JSON responses, data-only reader mappings, and registered tree UI provider
+aliases. Applications relying on executable response data must migrate; see
+[RUNTIME_SECURITY.md](RUNTIME_SECURITY.md).
 
 ## License
 

@@ -91,20 +91,41 @@ list. Changes to the list should be reviewed as explicit compatibility changes.
 
 JSMin is a direct port of the existing 2003 algorithm, with its original license
 notice retained. The debug/CSS comment removal behavior is also preserved.
-This intentionally keeps the original bundle bytes and JavaScript behavior.
+Unpatched builder output retains the original bundle bytes. Production builds
+apply deliberate security changes before minification; their output differs.
 
 ```sh
 go test ./...
 go vet ./...
 ```
 
-Tests compare line-ending-normalized SHA-256 values against output captured
+Unpatched builder tests compare line-ending-normalized SHA-256 values against output captured
 from the C# builder for the four main bundles, standalone adapter, and two
 retained CSS files. They also
 exercise missing inputs, malformed JavaScript, empty targets, invalid arguments,
 rejected legacy documentation modes, artifact validation, cancellation, ZIP contents, and preservation
-of a previous build. Intentional library changes require reviewing and updating
-the baseline hashes. CI runs on Windows, Linux, and macOS.
+of a previous build. The original baseline hashes remain unchanged; production
+patches are checked separately through build failure tests and packaged browser
+security regressions. CI runs on Windows, Linux, and macOS.
+
+## Shared source patches
+
+`overlay/source/patches.json` contains security patches applied while reading
+source inputs, before JSMin, debug concatenation, and source staging. The module
+is assembled from that staged source, so both distributions receive the fixes.
+Generated source documentation also reflects the patched implementation.
+
+Each patch names a source-relative `File`, exact LF-normalized `Before` text,
+and an expected `Count`. Use `After` for an inline replacement or `AfterFile`
+for a readable JavaScript replacement relative to the patch manifest. Invalid
+patches, missing replacement files, mismatched counts, and unused patches fail
+the staged build and preserve existing output. Review the snippets in
+`overlay/source/` alongside the patch manifest. Upstream files are not edited.
+
+Module-specific strict-mode patches in `overlay/module/patches.json` run afterward.
+Their replacements use the same count checks. Changes to shared patches must
+also keep module patch expectations valid. See [RUNTIME_SECURITY.md](RUNTIME_SECURITY.md)
+for the input contracts and remaining trusted-template/CSP boundaries.
 
 The build tool creates the same website template as before. Its Markdown viewer
 still loads Marked from a CDN; this migration does not make that viewer offline.

@@ -57,5 +57,28 @@ application, dynamically import it only from browser code. Prototype extensions
 from the original library remain. Some template and selector APIs generate code
 at runtime and require a CSP that permits that behavior.
 
+JSON responses are parsed strictly with `JSON.parse`, including stores, trees,
+and default form action handlers. Reader mappings accept own-property paths
+such as `person.name`, `items[0]`, and `details["display.name"]`; expressions and
+prototype traversal are rejected. Missing paths return `undefined` for field
+defaults. Register string tree UI providers explicitly in `uiProviders`.
+These restrictions apply to both module and classic files.
+
+`new Ext.SafeTemplate('<p>{person.name}</p>')` adds text bindings without runtime
+code compilation. It supports dotted own-data paths, numeric array segments,
+escaped literal braces, and DOM-fragment insertion. Expressions, formatters,
+getters, object coercion, active markup, attribute placeholders, and URL/style/
+event attributes are rejected. Keep static markup application-authored.
+Existing Template/XTemplate behavior remains available for trusted definitions.
+
+Selector arguments are escaped as literal data. Template definitions retain
+their executable expression features and must come from trusted application
+code. Use `{name:htmlEncode}` for untrusted text in HTML content; unformatted
+values remain HTML. This package does not sanitize arbitrary markup or URLs.
+
+The HTML encoder escapes both quote characters; URL validation remains separate.
+Legacy widget HTML sinks and prototype-sensitive copy/collection APIs remain
+documented security findings while their migration is underway.
+
 The upstream JavaScript, CSS, and graphics have their original license terms.
 See the included LICENSE.txt; asset terms differ from the JavaScript terms.

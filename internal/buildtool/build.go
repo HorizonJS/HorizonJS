@@ -66,15 +66,21 @@ func Build(ctx context.Context, opts Options) (resultErr error) {
 		return err
 	}
 	fmt.Fprintln(opts.Log, "Building library...")
+	patches, err := loadSourcePatches(filepath.Join(root, "overlay", "source", "patches.json"))
+	if err != nil {
+		return err
+	}
 	for _, relative := range []string{"source/ext.jsb", "resources/resources.jsb"} {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
 		dest := library
+		projectPatches := patches
 		if strings.HasPrefix(relative, "resources/") {
 			dest = filepath.Join(library, "resources")
+			projectPatches = nil
 		}
-		if err := buildProject(filepath.Join(root, "extjs-2.0.2", filepath.FromSlash(relative)), dest, missing[relative], opts.Log); err != nil {
+		if err := buildProject(filepath.Join(root, "extjs-2.0.2", filepath.FromSlash(relative)), dest, missing[relative], projectPatches, opts.Log); err != nil {
 			return err
 		}
 	}
@@ -168,7 +174,7 @@ func Build(ctx context.Context, opts Options) (resultErr error) {
 				return err
 			}
 		}
-		for _, name := range []string{"README.md", "EXTJS_2_0_2_USAGE.md", "BUILD_TOOL.md"} {
+		for _, name := range []string{"README.md", "EXTJS_2_0_2_USAGE.md", "BUILD_TOOL.md", "RUNTIME_SECURITY.md", "HTML_PROTOTYPE_AUDIT.md"} {
 			content, err := os.ReadFile(filepath.Join(root, name))
 			if err != nil {
 				return err

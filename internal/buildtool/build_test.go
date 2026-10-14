@@ -33,8 +33,11 @@ func fixture(t *testing.T) string {
 		"overlay/module/header.js":                   "var Ext;\n",
 		"overlay/module/footer.js":                   "export default Ext;\n",
 		"overlay/module/patches.json":                "[]",
+		"overlay/source/patches.json":                "[]",
 		"overlay/npm/package.json":                   `{"name":"@horizonjs/core","version":"0.1.0-dev.0"}`,
 		"EXTJS_2_0_2_USAGE.md":                       "usage",
+		"RUNTIME_SECURITY.md":                        "runtime input rules",
+		"HTML_PROTOTYPE_AUDIT.md":                    "HTML and prototype audit",
 	}
 	for name, content := range contents {
 		mustWrite(t, filepath.Join(root, filepath.FromSlash(name)), content)
@@ -220,7 +223,7 @@ func TestManifestRejectsInvalidInputs(t *testing.T) {
 			mustWrite(t, filepath.Join(root, "present.js"), "var present=true;")
 			manifest := `<project source="True" source-dir="$output/source" minify="True" min-dir="$output/min">` + test.files + `<target name="bundle" file="$output/bundle.js">` + test.includes + `</target></project>`
 			mustWrite(t, filepath.Join(root, "project.jsb"), manifest)
-			if err := buildProject(filepath.Join(root, "project.jsb"), filepath.Join(root, "out"), test.allow, io.Discard); err == nil {
+			if err := buildProject(filepath.Join(root, "project.jsb"), filepath.Join(root, "out"), test.allow, nil, io.Discard); err == nil {
 				t.Fatal("expected failure")
 			}
 			if _, err := os.Stat(filepath.Join(root, "out", "bundle.js")); !os.IsNotExist(err) {
@@ -252,8 +255,20 @@ func TestOriginalBundleCompatibility(t *testing.T) {
 		t.Fatal(err)
 	}
 	out := filepath.Join(t.TempDir(), "build")
-	if err := Build(context.Background(), Options{Root: root, Out: out, Tag: "test", Docs: "go"}); err != nil {
+	// Preserve the original builder baseline independently of the intentional
+	// security changes applied by the production pipeline.
+	missing, err := legacyMissing()
+	if err != nil {
 		t.Fatal(err)
+	}
+	for _, relative := range []string{"source/ext.jsb", "resources/resources.jsb"} {
+		dest := filepath.Join(out, "build")
+		if strings.HasPrefix(relative, "resources/") {
+			dest = filepath.Join(dest, "resources")
+		}
+		if err := buildProject(filepath.Join(root, "extjs-2.0.2", filepath.FromSlash(relative)), dest, missing[relative], nil, io.Discard); err != nil {
+			t.Fatal(err)
+		}
 	}
 	// SHA-256 values captured from the original C# builder before migration,
 	// normalizing CRLF to LF because Git checkouts differ across platforms.

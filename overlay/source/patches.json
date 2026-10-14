@@ -1,0 +1,116 @@
+[
+  {
+    "File": "util/JSON.js",
+    "Before": "return eval(\"(\" + json + ')');",
+    "Count": 1,
+    "After": "return JSON.parse(json);"
+  },
+  {
+    "File": "data/JsonReader.js",
+    "Before": "    read : function(response){\n        var json = response.responseText;\n        var o = eval(\"(\"+json+\")\");\n        if(!o) {\n            throw {message: \"JsonReader.read: Json object not found\"};\n        }\n        if(o.metaData){\n            delete this.ef;\n            this.meta = o.metaData;\n            this.recordType = Ext.data.Record.create(o.metaData.fields);\n            this.onMetaChange(this.meta, this.recordType, o);\n        }\n        return this.readRecords(o);\n    },",
+    "Count": 1,
+    "AfterFile": "json-reader-read.js"
+  },
+  {
+    "File": "data/JsonReader.js",
+    "Before": "    getJsonAccessor: function(){\n        var re = /[\\[\\.]/;\n        return function(expr) {\n            try {\n                return(re.test(expr))\n                    ? new Function(\"obj\", \"return obj.\" + expr)\n                    : function(obj){\n                        return obj[expr];\n                    };\n            } catch(e){}\n            return Ext.emptyFn;\n        };\n    }(),",
+    "Count": 1,
+    "AfterFile": "json-accessor.js"
+  },
+  {
+    "File": "widgets/tree/TreeLoader.js",
+    "Before": "    createNode : function(attr){",
+    "Count": 1,
+    "After": "    createNode : function(attr){\n        if(!attr || typeof attr != 'object' || Ext.isArray(attr)){\n            throw new SyntaxError('Tree node must be an object');\n        }"
+  },
+  {
+    "File": "widgets/tree/TreeLoader.js",
+    "Before": "           attr.uiProvider = this.uiProviders[attr.uiProvider] || eval(attr.uiProvider);",
+    "Count": 1,
+    "After": "           if(!Object.prototype.hasOwnProperty.call(this.uiProviders, attr.uiProvider) || typeof this.uiProviders[attr.uiProvider] != 'function'){\n               throw new Error('Unknown tree UI provider: ' + attr.uiProvider);\n           }\n           attr.uiProvider = this.uiProviders[attr.uiProvider];"
+  },
+  {
+    "File": "widgets/tree/TreeLoader.js",
+    "Before": "    processResponse : function(response, node, callback){\n        var json = response.responseText;\n        try {\n            var o = eval(\"(\"+json+\")\");\n            node.beginUpdate();\n            for(var i = 0, len = o.length; i < len; i++){\n                var n = this.createNode(o[i]);\n                if(n){\n                    node.appendChild(n);\n                }\n            }\n            node.endUpdate();\n            if(typeof callback == \"function\"){\n                callback(this, node);\n            }\n        }catch(e){\n            this.handleFailure(response);\n        }\n    },",
+    "Count": 1,
+    "AfterFile": "tree-response.js"
+  },
+  {
+    "File": "widgets/tree/TreeLoader.js",
+    "Before": "        this.processResponse(response, a.node, a.callback);\n        this.fireEvent(\"load\", this, a.node, response);",
+    "Count": 1,
+    "After": "        if(this.processResponse(response, a.node, a.callback) !== false){\n            this.fireEvent(\"load\", this, a.node, response);\n        }"
+  },
+  {
+    "File": "core/DomQuery.js",
+    "Before": "    var cache = {}, simpleCache = {}, valueCache = {};",
+    "Count": 1,
+    "After": "    var cache = Object.create(null), simpleCache = Object.create(null), valueCache = Object.create(null);"
+  },
+  {
+    "File": "core/DomQuery.js",
+    "Before": "        return Ext.DomQuery.pseudos[name](cs, value);",
+    "Count": 1,
+    "After": "        if(!Object.prototype.hasOwnProperty.call(Ext.DomQuery.pseudos, name) || typeof Ext.DomQuery.pseudos[name] != 'function'){\n            throw new Error('Unknown selector pseudo: ' + name);\n        }\n        return Ext.DomQuery.pseudos[name](cs, value);"
+  },
+  {
+    "File": "core/DomQuery.js",
+    "Before": "                                                    return m[i];",
+    "Count": 1,
+    "After": "                                                    // Captures are data inside a double-quoted JS literal.\n                                                    return String(m[i] === undefined ? '' : m[i])\n                                                        .replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"')\n                                                        .replace(/\\r/g, '\\\\r').replace(/\\n/g, '\\\\n')\n                                                        .replace(/\\u2028/g, '\\\\u2028').replace(/\\u2029/g, '\\\\u2029');"
+  },
+  {
+    "File": "legacy/JsonView.js",
+    "Before": "o = eval(\"o.\" + this.jsonRoot);",
+    "After": "o = Ext.data.JsonReader.prototype.getJsonAccessor(this.jsonRoot)(o);",
+    "Count": 1
+  },
+  {
+    "File": "core/DomQuery.js",
+    "Before": "re: /^(?:([\\[\\{])(?:@)?([\\w-]+)\\s?(?:(=|.=)\\s?['\"]?(.*?)[\"']?)?[\\]\\}])/",
+    "After": "re: /^(?:([\\[\\{])(?:@)?([\\w-]+)\\s?(?:(=|.=)\\s?['\"]?([\\s\\S]*?)[\"']?)?[\\]\\}])/",
+    "Count": 1
+  },
+  {
+    "File": "core/DomQuery.js",
+    "Before": "re: /^\\:([\\w-]+)(?:\\(((?:[^\\s>\\/]*|.*?))\\))?/",
+    "After": "re: /^\\:([\\w-]+)(?:\\(((?:[^\\s>\\/]*|[\\s\\S]*?))\\))?/",
+    "Count": 1
+  },
+  {
+    "File": "data/Record.js",
+    "Before": "is being used, then this is a string containing the javascript expression to reference the data relative to\n * the record item's root.",
+    "After": "is being used, then this is a data property path relative to the record item's root.\n * Dotted names, numeric indexes, and quoted bracket keys are supported; executable expressions\n * and prototype traversal are rejected. Missing paths return undefined.",
+    "Count": 1
+  },
+  {
+    "File": "widgets/tree/TreeLoader.js",
+    "Before": " * nodes from a specified URL. The response must be a JavaScript Array definition\n * whose elements are node definition objects. eg:\n * <pre><code>\n    [{\n        id: 1,\n        text: 'A leaf Node',\n        leaf: true\n    },{\n        id: 2,\n        text: 'A folder Node',\n        children: [{\n            id: 3,\n            text: 'A child Node',\n            leaf: true\n        }]\n   }]\n</code></pre>",
+    "After": " * nodes from a specified URL. The response must be a strict JSON array\n * whose elements are node definition objects. For example:\n * <pre><code>\n    [{\n        \"id\": 1,\n        \"text\": \"A leaf Node\",\n        \"leaf\": true\n    },{\n        \"id\": 2,\n        \"text\": \"A folder Node\",\n        \"children\": [{\n            \"id\": 3,\n            \"text\": \"A child Node\",\n            \"leaf\": true\n        }]\n   }]\n</code></pre>",
+    "Count": 1
+  },
+  {
+    "File": "core/Template.js",
+    "Before": "Ext.Template.from = function(el, config){\n    el = Ext.getDom(el);\n    return new Ext.Template(el.value || el.innerHTML, config || '');\n};",
+    "AfterFile": "safe-template.js",
+    "Count": 1
+  },
+  {
+    "File": "util/Format.js",
+    "Before": "String(value).replace(/&/g, \"&amp;\").replace(/>/g, \"&gt;\").replace(/</g, \"&lt;\").replace(/\"/g, \"&quot;\")",
+    "After": "String(value).replace(/&/g, \"&amp;\").replace(/>/g, \"&gt;\").replace(/</g, \"&lt;\").replace(/\"/g, \"&quot;\").replace(/'/g, \"&#39;\")",
+    "Count": 1
+  },
+  {
+    "File": "util/Format.js",
+    "Before": "String(value).replace(/&amp;/g, \"&\").replace(/&gt;/g, \">\").replace(/&lt;/g, \"<\").replace(/&quot;/g, '\"')",
+    "After": "String(value).replace(/&#(?:39|x27);|&apos;/gi, \"'\").replace(/&amp;/g, \"&\").replace(/&gt;/g, \">\").replace(/&lt;/g, \"<\").replace(/&quot;/g, '\"')",
+    "Count": 1
+  },
+  {
+    "File": "util/JSON.js",
+    "Before": "if(!useHasOwn || o.hasOwnProperty(i)) {",
+    "After": "if(!useHasOwn || Object.prototype.hasOwnProperty.call(o, i)) {",
+    "Count": 1
+  }
+]

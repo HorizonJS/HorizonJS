@@ -8,6 +8,8 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { chromium, firefox } from 'playwright';
 import { build as viteBuild, createServer as viteServer, preview } from 'vite';
+import { runSecurityChecks } from './security-checks.mjs';
+import { runSafeTemplateChecks } from './safe-template-checks.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const temporary = await realpath(await mkdtemp(path.join(tmpdir(), 'horizon-browser-')));
@@ -21,6 +23,10 @@ function npmRun(args) {
 }
 
 const checks = `
+${runSecurityChecks.toString()}
+runSecurityChecks(Ext);
+${runSafeTemplateChecks.toString()}
+runSafeTemplateChecks(Ext);
 function check(ok, message) { if (!ok) throw new Error(message); }
 check(Ext === window.Ext, 'module and global Ext differ');
 await new Promise(resolve => Ext.onReady(resolve));
@@ -81,7 +87,7 @@ window.smokeDone = true;
 `;
 
 const body = '<div id="app"></div><div id="grid"></div><div id="form"></div><div id="button"></div><div id="effect" style="width:40px;height:40px">Effect</div>';
-const pageHTML = (head, script) => `<!doctype html><html><head>${head}</head><body>${body}<script type="module">${script}\n${checks}</script></body></html>`;
+const pageHTML = (head, script) => `<!doctype html><html><head>${head}</head><body>${body}<script type="module">${(script + '\n' + checks).replace(/<\/script/gi, '<\\/script')}</script></body></html>`;
 
 async function staticServer(directory) {
   const server = httpServer(async (request, response) => {
@@ -136,6 +142,7 @@ try {
 `));
   await writeFile(path.join(installed, 'late.html'), pageHTML('<link rel="stylesheet" href="./resources/css/ext-all.css">', "await new Promise(resolve => window.addEventListener('load', resolve)); const {default:Ext} = await import('./index.mjs');"));
   await writeFile(path.join(installed, 'classic.html'), pageHTML('<link rel="stylesheet" href="./resources/css/ext-all.css"><script src="./adapter/ext/ext-base.js"></script><script src="./ext-all.js"></script>', "const Ext = window.Ext; Ext.BLANK_IMAGE_URL = './resources/images/default/s.gif';"));
+  await writeFile(path.join(installed, 'classic-debug.html'), pageHTML('<link rel="stylesheet" href="./resources/css/ext-all.css"><script src="./adapter/ext/ext-base.js"></script><script src="./ext-all-debug.js"></script>', "const Ext = window.Ext; Ext.BLANK_IMAGE_URL = './resources/images/default/s.gif';"));
   const native = await staticServer(installed);
   servers.push(native);
   browser = await (process.argv.includes('--firefox') ? firefox : chromium).launch({headless:true});
@@ -143,7 +150,7 @@ try {
   async function runPage(label, url) {
     const page = await browser.newPage();
     const errors = [];
-    page.on('pageerror', error => errors.push(error.stack));
+    page.on('pageerror', error => errors.push(error.stack || error.message || String(error)));
     page.on('response', response => { if (response.status() >= 400 && !response.url().endsWith('favicon.ico')) errors.push(`${response.status()} ${response.url()}`); });
     await page.goto(url);
     try {
@@ -159,6 +166,7 @@ try {
   await runPage('native module', native.url + '/native.html');
   await runPage('module imported after load', native.url + '/late.html');
   await runPage('classic scripts', native.url + '/classic.html');
+  await runPage('classic debug scripts', native.url + '/classic-debug.html');
 
   await writeFile(path.join(temporary, 'index.html'), pageHTML('', "import Ext from '@horizonjs/core'; import '@horizonjs/core/styles.css'; import '@horizonjs/core/themes/gray.css';"));
   const dev = await viteServer({root:temporary, configFile:false, server:{host:'127.0.0.1', port:0}, logLevel:'warn'});

@@ -57,7 +57,7 @@ type sourceFile struct {
 
 var blockComments = regexp.MustCompile(`(?s)/\*.*?\*/`)
 
-func buildProject(manifest, out string, allowedMissing []string, log io.Writer) error {
+func buildProject(manifest, out string, allowedMissing []string, patches []sourcePatch, log io.Writer) error {
 	data, err := os.ReadFile(manifest)
 	if err != nil {
 		return err
@@ -104,6 +104,7 @@ func buildProject(manifest, out string, allowedMissing []string, log io.Writer) 
 	files := make(map[string]sourceFile, len(p.Files))
 	declared := make(map[string]bool, len(p.Files))
 	missing := 0
+	applied := make([]bool, len(patches))
 	// Validate and parse every input before writing anything for this project.
 	for _, entry := range p.Files {
 		name := strings.ReplaceAll(entry.Name, `\`, "/")
@@ -142,6 +143,11 @@ func buildProject(manifest, out string, allowedMissing []string, log io.Writer) 
 		case ".js":
 			// Match StreamReader's handling of UTF-8 BOMs in the previous builder.
 			file.source = []byte(strings.TrimPrefix(string(bytes), "\uFEFF"))
+			patched, err := applySourcePatches(string(file.source), name, patches, applied)
+			if err != nil {
+				return err
+			}
+			file.source = []byte(patched)
 			result, err := minifyJS(string(file.source))
 			if err != nil {
 				return fmt.Errorf("%s: %w", name, err)
@@ -152,6 +158,9 @@ func buildProject(manifest, out string, allowedMissing []string, log io.Writer) 
 			file.minified, file.parsed = blockComments.ReplaceAll(file.source, nil), true
 		}
 		files[name] = file
+	}
+	if err := checkAppliedPatches(patches, applied); err != nil {
+		return err
 	}
 	for _, t := range p.Targets {
 		if strings.EqualFold(t.Shorthand, "true") {

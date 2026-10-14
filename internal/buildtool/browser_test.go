@@ -11,7 +11,7 @@ import (
 
 func TestBrowserPackageVersionAndPatches(t *testing.T) {
 	root := fixture(t)
-	patches := []browserPatch{{File: "main.js", Before: "var fixture = true;", After: "var fixture = 'module';", Count: 1}}
+	patches := []sourcePatch{{File: "main.js", Before: "var fixture = true;", After: "var fixture = 'module';", Count: 1}}
 	data, err := json.Marshal(patches)
 	if err != nil {
 		t.Fatal(err)
@@ -39,18 +39,18 @@ func TestBrowserPackageVersionAndPatches(t *testing.T) {
 }
 
 func TestBrowserPatchDriftPreservesOutput(t *testing.T) {
-	for _, patch := range []browserPatch{
+	for _, patch := range []sourcePatch{
 		{File: "main.js", Before: "missing text", After: "replacement", Count: 1},
 		{File: "not-included.js", Before: "var fixture = true;", After: "replacement", Count: 1},
 	} {
 		root := fixture(t)
-		data, err := json.Marshal([]browserPatch{patch})
+		data, err := json.Marshal([]sourcePatch{patch})
 		if err != nil {
 			t.Fatal(err)
 		}
 		mustWrite(t, filepath.Join(root, "overlay/module/patches.json"), string(data))
 		mustWrite(t, filepath.Join(root, "build/previous.txt"), "previous output")
-		if err := Build(context.Background(), Options{Root: root, Tag: "main", Docs: "bundled"}); err == nil || !strings.Contains(err.Error(), "module patch") {
+		if err := Build(context.Background(), Options{Root: root, Tag: "main", Docs: "bundled"}); err == nil || !strings.Contains(err.Error(), "source patch") {
 			t.Fatalf("expected patch failure: %v", err)
 		}
 		previous, err := os.ReadFile(filepath.Join(root, "build/previous.txt"))
